@@ -178,65 +178,112 @@ const AudioEngine = (() => {
       }
     },
 
-    // exaggerated cartoon "OUCH" voices: 5 variations
+    // exaggerated "got whipped" voices, pain-and-surprise side: 7 variations,
+    // each long enough to land as a real character reaction
     ouch() {
       if (!ensure()) return; const t = ctx.currentTime;
       const r = vary();
-      switch (Math.floor(Math.random() * 5)) {
-        case 0: // "YEEE-OWWWW!" big up then long fall
-          voice({ t0: t, dur: 0.55, peak: 1.0,
-            pitch: scaled([[0, 340], [0.09, 1150], [0.2, 850], [0.55, 210]], r),
-            f1: [[0, 420], [0.12, 850], [0.55, 500]], f2: [[0, 2200], [0.12, 1300], [0.55, 950]],
+      switch (Math.floor(Math.random() * 7)) {
+        case 0: // "YEEE-OWWWWWW!" big leap then long falling wail
+          voice({ t0: t, dur: 0.85, peak: 1.0,
+            pitch: scaled([[0, 340], [0.1, 1150], [0.24, 880], [0.85, 180]], r),
+            f1: [[0, 420], [0.14, 850], [0.85, 480]], f2: [[0, 2200], [0.14, 1300], [0.85, 900]],
+            vibRate: 8, vibDepth: 30 });
+          break;
+        case 1: // "OWW-ow-ow-ow-owww" descending stutter of little hurts
+          [0, 0.17, 0.32, 0.46].forEach((dt, i) => voice({ t0: t + dt, dur: i === 3 ? 0.34 : 0.13, peak: 1.0 - i * 0.1,
+            pitch: scaled([[0, 760 - i * 110], [i === 3 ? 0.34 : 0.13, 420 - i * 60]], r),
+            f1: [[0, 850 - i * 80]], f2: [[0, 1350 - i * 100]] }));
+          break;
+        case 2: // "YIPE-yipe-YIPE!!" three shrill spikes, last one biggest
+          [0, 0.2, 0.4].forEach((dt, i) => voice({ t0: t + dt, dur: 0.16, peak: 0.85 + i * 0.1,
+            pitch: scaled([[0, 700 + i * 60], [0.05, 1450 + i * 150], [0.16, 720]], r),
+            f1: [[0, 350], [0.06, 600], [0.16, 400]], f2: [[0, 2500], [0.16, 1800]] }));
+          break;
+        case 3: // "WAH-HA-HA-HAAAA" long sobbing wobble
+          voice({ t0: t, dur: 0.95, peak: 0.95,
+            pitch: scaled([[0, 640], [0.14, 440], [0.28, 580], [0.44, 400], [0.6, 500], [0.95, 230]], r),
+            f1: [[0, 800], [0.95, 520]], f2: [[0, 1250], [0.95, 900]],
+            trem: 7 });
+          break;
+        case 4: // "HUH?!... OWWWW!" startled gasp, beat of silence, then the wail
+          voice({ t0: t, dur: 0.16, peak: 0.85,
+            pitch: scaled([[0, 480], [0.16, 900]], r),
+            f1: [[0, 600], [0.16, 750]], f2: [[0, 1500], [0.16, 2000]] });
+          voice({ t0: t + 0.32, dur: 0.6, peak: 1.05,
+            pitch: scaled([[0, 850], [0.1, 640], [0.6, 190]], r),
+            f1: [[0, 900], [0.6, 470]], f2: [[0, 1400], [0.6, 900]],
             vibRate: 9, vibDepth: 25 });
           break;
-        case 1: // "OWWW!" hard attack, steep drop
-          voice({ t0: t, dur: 0.32, peak: 1.1,
-            pitch: scaled([[0, 780], [0.06, 620], [0.32, 170]], r),
-            f1: [[0, 900], [0.32, 450]], f2: [[0, 1400], [0.32, 900]] });
+        case 5: // "WOAH-oh-oh-ohhh" shocked wobble sliding off a cliff
+          voice({ t0: t, dur: 0.8, peak: 1.0,
+            pitch: scaled([[0, 420], [0.12, 780], [0.3, 560], [0.45, 660], [0.6, 480], [0.8, 260]], r),
+            f1: [[0, 550], [0.12, 800], [0.8, 500]], f2: [[0, 1050], [0.12, 1350], [0.8, 950]],
+            vibRate: 6, vibDepth: 45 });
           break;
-        case 2: // "YIPE!!" shrill spike
-          voice({ t0: t, dur: 0.17, peak: 1.0,
-            pitch: scaled([[0, 700], [0.05, 1550], [0.17, 750]], r),
-            f1: [[0, 350], [0.06, 600], [0.17, 400]], f2: [[0, 2500], [0.17, 1800]] });
-          break;
-        case 3: // "WAH-HA-HAAA" sobbing wobble
-          voice({ t0: t, dur: 0.6, peak: 0.95,
-            pitch: scaled([[0, 620], [0.12, 430], [0.24, 560], [0.38, 380], [0.6, 260]], r),
-            f1: [[0, 800], [0.6, 550]], f2: [[0, 1250], [0.6, 950]],
-            trem: 8 });
-          break;
-        case 4: // "HOO-HOO-HOO!" bouncing yelps
-          [0, 0.14, 0.28].forEach((dt, i) => voice({ t0: t + dt, dur: 0.11, peak: 0.9,
-            pitch: scaled([[0, 640 - i * 70], [0.11, 420 - i * 50]], r),
-            f1: [[0, 500]], f2: [[0, 1050]] }));
+        case 6: // "MAMMA-MIAAAA!" operatic yodel drop
+          voice({ t0: t, dur: 0.22, peak: 0.9,
+            pitch: scaled([[0, 520], [0.1, 700], [0.22, 620]], r),
+            f1: [[0, 750]], f2: [[0, 1250]] });
+          voice({ t0: t + 0.24, dur: 0.7, peak: 1.05,
+            pitch: scaled([[0, 900], [0.18, 1200], [0.7, 300]], r),
+            f1: [[0, 700], [0.2, 900], [0.7, 500]], f2: [[0, 1800], [0.7, 1000]],
+            vibRate: 10, vibDepth: 50 });
           break;
       }
     },
 
-    // exaggerated delighted reactions: 3 variations
+    // delighted / excited / astonished reactions: 6 variations
     joy() {
       if (!ensure()) return; const t = ctx.currentTime;
       const r = vary();
-      switch (Math.floor(Math.random() * 3)) {
-        case 0: // "HEE-HEE-HEE-HEE!" ascending giggle
-          [0, 0.11, 0.22, 0.33].forEach((dt, i) => voice({ t0: t + dt, dur: 0.09, peak: 0.85,
-            pitch: scaled([[0, 750 + i * 130], [0.09, 900 + i * 150]], r),
+      switch (Math.floor(Math.random() * 6)) {
+        case 0: // "HEE-HEE-HEE-HEE-HEEE!" long ascending giggle fit
+          [0, 0.12, 0.24, 0.36, 0.48].forEach((dt, i) => voice({ t0: t + dt, dur: i === 4 ? 0.22 : 0.1, peak: 0.85,
+            pitch: scaled([[0, 720 + i * 120], [i === 4 ? 0.22 : 0.1, 880 + i * 140]], r),
             f1: [[0, 320]], f2: [[0, 2500]] }));
           break;
-        case 1: // "WHEEEEEE!" long rising squeal with vibrato
-          voice({ t0: t, dur: 0.6, peak: 1.0,
-            pitch: scaled([[0, 480], [0.35, 1350], [0.6, 1500]], r),
-            f1: [[0, 350], [0.3, 320]], f2: [[0, 2300], [0.6, 2700]],
-            vibRate: 10, vibDepth: 40 });
+        case 1: // "WHEEEEEEEE!" long rising rollercoaster squeal
+          voice({ t0: t, dur: 0.9, peak: 1.0,
+            pitch: scaled([[0, 460], [0.5, 1350], [0.9, 1550]], r),
+            f1: [[0, 350], [0.4, 320]], f2: [[0, 2300], [0.9, 2800]],
+            vibRate: 10, vibDepth: 45 });
           break;
-        case 2: // "WOO-HOO!!" two punchy whoops
-          voice({ t0: t, dur: 0.18, peak: 1.0,
+        case 2: // "WOO-HOO-HOOOO!!" three escalating whoops
+          voice({ t0: t, dur: 0.18, peak: 0.95,
             pitch: scaled([[0, 550], [0.07, 950], [0.18, 800]], r),
             f1: [[0, 400], [0.18, 600]], f2: [[0, 900], [0.18, 1400]] });
-          voice({ t0: t + 0.2, dur: 0.28, peak: 1.0,
-            pitch: scaled([[0, 620], [0.08, 1250], [0.28, 900]], r),
-            f1: [[0, 450], [0.28, 700]], f2: [[0, 1000], [0.28, 1700]],
-            vibRate: 9, vibDepth: 30 });
+          voice({ t0: t + 0.2, dur: 0.2, peak: 1.0,
+            pitch: scaled([[0, 620], [0.08, 1150], [0.2, 900]], r),
+            f1: [[0, 450], [0.2, 700]], f2: [[0, 1000], [0.2, 1700]] });
+          voice({ t0: t + 0.42, dur: 0.4, peak: 1.05,
+            pitch: scaled([[0, 700], [0.1, 1350], [0.4, 950]], r),
+            f1: [[0, 500], [0.4, 750]], f2: [[0, 1100], [0.4, 1900]],
+            vibRate: 9, vibDepth: 35 });
+          break;
+        case 3: // "AGAIN?! AGAIN!" two eager rising exclamations
+          voice({ t0: t, dur: 0.26, peak: 0.9,
+            pitch: scaled([[0, 520], [0.12, 780], [0.26, 950]], r),
+            f1: [[0, 650], [0.26, 800]], f2: [[0, 1600], [0.26, 2100]] });
+          voice({ t0: t + 0.34, dur: 0.38, peak: 1.05,
+            pitch: scaled([[0, 600], [0.15, 900], [0.38, 1250]], r),
+            f1: [[0, 650], [0.38, 850]], f2: [[0, 1600], [0.38, 2400]],
+            vibRate: 8, vibDepth: 25 });
+          break;
+        case 4: // "OH-HO-HO-HO-HO!" big rolling belly laugh, lower voice
+          [0, 0.16, 0.31, 0.45, 0.58].forEach((dt, i) => voice({ t0: t + dt, dur: i === 0 ? 0.16 : 0.12, peak: 1.0 - i * 0.08,
+            pitch: scaled([[0, i === 0 ? 300 : 380 - i * 18], [0.12, i === 0 ? 430 : 300 - i * 14]], r),
+            f1: [[0, 550]], f2: [[0, 950]] }));
+          break;
+        case 5: // "Mmmm... WOW!!" low astonished hum blooming into a bright peak
+          voice({ t0: t, dur: 0.3, peak: 0.65,
+            pitch: scaled([[0, 260], [0.3, 330]], r),
+            f1: [[0, 380]], f2: [[0, 800]],
+            vibRate: 6, vibDepth: 12 });
+          voice({ t0: t + 0.34, dur: 0.5, peak: 1.05,
+            pitch: scaled([[0, 420], [0.12, 950], [0.35, 820], [0.5, 600]], r),
+            f1: [[0, 500], [0.12, 800], [0.5, 600]], f2: [[0, 1000], [0.12, 1500], [0.5, 1200]],
+            vibRate: 8, vibDepth: 30 });
           break;
       }
     },
