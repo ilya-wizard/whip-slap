@@ -146,9 +146,8 @@ const UI = (() => {
       if (!isPractice && res.stars >= n) star.classList.add('earned');
     });
 
-    // NEXT button: only when there is an unlocked next level
-    const nextLv = res.levelId + 1;
-    const hasNext = !isPractice && nextLv <= 10 && res.stars >= 1;
+    // NEXT (to level selection): shown for any cleared non-practice run
+    const hasNext = !isPractice && res.stars >= 1;
     $('btn-next').style.display = hasNext ? '' : 'none';
 
     show('screen-results');
@@ -218,8 +217,8 @@ const UI = (() => {
     $('btn-retry').addEventListener('click', () => { AudioEngine.sfx.click(); startLevel(); });
     $('btn-next').addEventListener('click', () => {
       AudioEngine.sfx.click();
-      currentLevelId = Math.min(10, currentLevelId + 1);
-      openWhips();
+      renderLevels();
+      show('screen-levels');
     });
     $('btn-results-menu').addEventListener('click', () => { AudioEngine.sfx.click(); show('screen-menu'); });
 

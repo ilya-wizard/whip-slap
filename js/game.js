@@ -35,7 +35,7 @@ const Game = (() => {
     els = {
       screen: $('screen-game'), playfield: $('playfield'), actors: $('actors'),
       fx: $('fx-layer'), score: $('hud-score'), acc: $('hud-acc'), accBadge: $('hud-acc-badge'),
-      timerFill: $('hud-timer-fill'), timerText: $('hud-timer-text'),
+      timerFill: $('hud-timer-fill'), timerText: $('hud-timer-text'), levelBadge: $('hud-level'),
       whipName: $('hud-whip-name'), cursor: $('whip-cursor'), cdArc: $('cursor-cd-arc'),
       cursorArt: $('cursor-whip-art'),
       countdown: $('countdown'), countdownText: $('countdown-text'),
@@ -71,6 +71,7 @@ const Game = (() => {
     els.score.textContent = '0';
     els.acc.textContent = '100%';
     els.whipName.textContent = whip.name;
+    els.levelBadge.textContent = level.name;
     els.cursorArt.innerHTML = WHIP_ART[whip.id];
     els.timerFill.style.width = '100%';
     els.timerFill.classList.remove('low');
