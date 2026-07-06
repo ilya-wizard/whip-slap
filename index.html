@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Whip Slap!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Bungee&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/characters.css">
+<link rel="stylesheet" href="css/screens.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+
+    <!-- ============ MAIN MENU ============ -->
+    <section id="screen-menu" class="screen">
+      <div class="stripe-wall"></div>
+      <div class="curtain"></div>
+      <div class="menu-performers" id="menu-performers"></div>
+      <div class="menu-title-block">
+        <div class="game-logo">WHIP SLAP!</div>
+        <div class="tagline-pill"><span>A CARNIVAL OF COMIC REFLEXES</span></div>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn btn-primary btn-pulse" id="btn-play">PLAY</button>
+        <button class="btn btn-secondary" id="btn-settings">SETTINGS</button>
+      </div>
+      <div class="menu-footer">v1.0 &mdash; step right up</div>
+      <!-- settings panel -->
+      <div class="settings-panel hidden" id="settings-panel">
+        <div class="settings-card">
+          <div class="settings-title">SETTINGS</div>
+          <label class="setting-row"><span>Sound effects</span><button class="toggle" id="toggle-sfx">ON</button></label>
+          <label class="setting-row"><span>Music</span><button class="toggle" id="toggle-music">ON</button></label>
+          <div class="setting-row danger-row">
+            <span>Progress</span><button class="toggle danger" id="btn-reset-progress">RESET</button>
+          </div>
+          <button class="btn btn-secondary settings-close" id="btn-settings-close">CLOSE</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LEVEL SELECT ============ -->
+    <section id="screen-levels" class="screen hidden">
+      <div class="stripe-wall"></div>
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Pick a Level</div>
+          <div class="screen-sub">Earn at least 1 star to unlock the next one.</div>
+        </div>
+        <button class="btn btn-tertiary btn-small" id="btn-levels-back">&#9664; MENU</button>
+      </div>
+      <div class="level-grid" id="level-grid"></div>
+    </section>
+
+    <!-- ============ WHIP SELECTION ============ -->
+    <section id="screen-whips" class="screen hidden">
+      <div class="stripe-wall"></div>
+      <div class="screen-header">
+        <div>
+          <div class="screen-title">Choose Your Whip</div>
+          <div class="screen-sub">Three types. Fast and cheap, balanced, or slow and heavy.</div>
+        </div>
+        <div class="header-right">
+          <div class="level-chip" id="whips-level-chip">LEVEL 1</div>
+          <button class="btn btn-tertiary btn-small" id="btn-whips-back">&#9664; BACK</button>
+        </div>
+      </div>
+      <div class="whip-grid" id="whip-grid"></div>
+      <div class="whips-start-row">
+        <button class="btn btn-primary btn-pulse" id="btn-start-level">START! &#9654;</button>
+      </div>
+    </section>
+
+    <!-- ============ GAMEPLAY ============ -->
+    <section id="screen-game" class="screen hidden">
+      <div class="stripe-wall"></div>
+      <div class="curtain curtain-low"></div>
+
+      <div id="playfield">
+        <div class="lane-line" style="top:27%"></div>
+        <div class="lane-line" style="top:55%"></div>
+        <div class="lane-line" style="top:86%"></div>
+        <div id="actors"></div>
+        <div id="fx-layer"></div>
+      </div>
+
+      <!-- top HUD -->
+      <div class="hud-top-left">
+        <div class="score-badge"><div class="score-glyph"></div></div>
+        <div>
+          <div class="hud-label">SCORE</div>
+          <div class="hud-score" id="hud-score">0</div>
+        </div>
+      </div>
+      <div class="hud-top-right">
+        <div class="hud-label">ACCURACY</div>
+        <div class="acc-badge" id="hud-acc-badge"><span id="hud-acc">100%</span></div>
+      </div>
+
+      <!-- bottom HUD -->
+      <div class="hud-bottom-left">
+        <div class="timer-track"><div class="timer-fill" id="hud-timer-fill"></div></div>
+        <div class="timer-text" id="hud-timer-text">1:00</div>
+      </div>
+      <div class="hud-bottom-right">
+        <div class="equip-icon" id="hud-whip-icon"><div class="equip-icon-bar"></div></div>
+        <div>
+          <div class="hud-sublabel">EQUIPPED</div>
+          <div class="hud-whipname" id="hud-whip-name">BULLWHIP</div>
+        </div>
+      </div>
+      <button class="pause-chip" id="btn-pause">&#10073;&#10073;</button>
+
+      <!-- whip cursor: the equipped whip's art follows the pointer -->
+      <div id="whip-cursor">
+        <div class="cursor-hotspot"></div>
+        <div class="cursor-whip"><div class="cursor-whip-art" id="cursor-whip-art"></div></div>
+        <svg class="cursor-cd" viewBox="0 0 40 40"><circle id="cursor-cd-arc" cx="20" cy="20" r="16" /></svg>
+      </div>
+
+      <!-- countdown -->
+      <div id="countdown" class="hidden"><span id="countdown-text">3</span></div>
+
+      <!-- hint -->
+      <div id="hint-banner" class="hidden">Wait for the gold ring&hellip; then SLAP it!</div>
+
+      <!-- pause overlay -->
+      <div id="pause-overlay" class="hidden">
+        <div class="pause-card">
+          <div class="pause-title">PAUSED</div>
+          <button class="btn btn-primary" id="btn-resume">RESUME</button>
+          <button class="btn btn-secondary" id="btn-quit">QUIT LEVEL</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="screen-results" class="screen hidden">
+      <div class="stripe-wall"></div>
+      <div class="curtain curtain-low"></div>
+      <div class="confetti" style="left:420px;top:160px;background:#2EC4C6;animation-duration:1.8s"></div>
+      <div class="confetti" style="left:1480px;top:210px;background:#FF6F59;animation-duration:2.1s;animation-delay:.3s"></div>
+      <div class="confetti" style="left:560px;top:620px;background:#7B4FE0;animation-duration:1.6s;animation-delay:.6s"></div>
+      <div class="confetti" style="left:1360px;top:640px;background:#FFCB3D;animation-duration:2.3s;animation-delay:.15s"></div>
+
+      <div class="results-col">
+        <div class="results-eyebrow" id="results-eyebrow">LEVEL 1 CLEAR</div>
+        <div class="results-headline" id="results-headline">NICE SLAP!</div>
+        <div class="stars-row" id="stars-row">
+          <div class="star" id="star-1"><div class="star-shape"></div></div>
+          <div class="star star-mid" id="star-2"><div class="star-shape"></div></div>
+          <div class="star" id="star-3"><div class="star-shape"></div></div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-total">
+            <span>TOTAL SCORE</span>
+            <span class="score-card-value" id="results-total">0</span>
+          </div>
+          <div class="score-line"><div class="score-line-label"><div class="chip chip-teal"></div><span>Hit points</span></div><span class="score-line-value" id="results-hits">0</span></div>
+          <div class="score-line"><div class="score-line-label"><div class="chip chip-coral"></div><span>Accuracy bonus</span></div><span class="score-line-value" id="results-accuracy">0</span></div>
+          <div class="score-line"><div class="score-line-label"><div class="chip chip-purple"></div><span>Whiff penalty</span></div><span class="score-line-value" id="results-penalty">0</span></div>
+        </div>
+        <div class="results-buttons">
+          <button class="btn btn-secondary" id="btn-retry">RETRY</button>
+          <button class="btn btn-primary btn-pulse" id="btn-next">NEXT &#9654;</button>
+          <button class="btn btn-tertiary" id="btn-results-menu">MENU</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/characters.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

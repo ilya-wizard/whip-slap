@@ -1,0 +1,112 @@
+/* =========================================================
+   CHARACTER / ACTOR STATE STYLES
+   Characters are built from inline-styled divs (see characters.js,
+   construction copied from the design handoff). This file only
+   defines state-driven behavior shared by all performers.
+   ========================================================= */
+
+.actor {
+  position: absolute;
+  left: 0; top: 0;
+  will-change: transform;
+}
+
+.char { position: relative; width: 100%; height: 100%; }
+
+/* the two pose subtrees */
+.body-walk, .body-ask { position: absolute; inset: 0; }
+
+/* walking: bob + leg swing */
+.actor.walking .char { animation: bob 1.1s ease-in-out infinite; }
+.actor.walking .leg-l { animation: walkLeg .55s ease-in-out infinite; transform-origin: top center; }
+.actor.walking .leg-r { animation: walkLegR .55s ease-in-out infinite; transform-origin: top center; }
+.actor .body-ask { display: none; }
+
+/* telegraph: stop, shiver, "!" puff */
+.actor.telegraph .char { animation: shiver .18s linear infinite; }
+.actor.telegraph .body-walk, .actor.asking .body-walk,
+.actor.hit .body-walk, .actor.expired .body-walk { display: none; }
+.actor.telegraph .body-ask, .actor.asking .body-ask,
+.actor.hit .body-ask, .actor.expired .body-ask { display: block; }
+
+.puff {
+  position: absolute; top: -54px; left: 50%; margin-left: -24px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--cream); border: 5px solid var(--ink);
+  display: none; align-items: center; justify-content: center;
+  font-family: 'Bungee', sans-serif; font-size: 26px; color: var(--coral);
+  z-index: 20;
+}
+.actor.telegraph .puff { display: flex; animation: puffPop .25s ease-out both; }
+
+/* asking: sway + expose/cover crossfade */
+.actor.asking .char { animation: sway 2.2s ease-in-out infinite; transform-origin: bottom center; }
+.expose-group { opacity: 0; transform: scale(.9); transition: opacity .16s ease-in-out, transform .16s ease-in-out; }
+.cover-group  { opacity: 1; transition: opacity .16s ease-in-out; }
+.actor.asking .expose-group { opacity: 1; transform: scale(1); }
+.actor.asking .cover-group  { opacity: 0; }
+
+/* the pulsing gold target ring (rendered inside expose-group) */
+.target-ring {
+  position: absolute; border-radius: 50%;
+  border: 6px solid var(--yellow);
+  animation: pulseRing .9s ease-out infinite;
+  pointer-events: none;
+}
+.target-inner {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,203,61,.25);
+  border: 4px dashed var(--yellow);
+  pointer-events: none;
+}
+/* invisible circle used for hit testing (JS reads its rect) */
+.hitzone { position: absolute; border-radius: 50%; pointer-events: none; }
+
+/* window closing warning: ring flickers */
+.actor.closing .target-ring, .actor.closing .target-inner { animation: ringFlicker .18s linear infinite; }
+@keyframes ringFlicker { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
+/* hit reaction: boing + orbiting stars */
+.actor.hit .char { animation: boing .55s ease-out both; }
+.hit-stars { position: absolute; top: -30px; left: 50%; width: 0; height: 0; display: none; z-index: 25; }
+.actor.hit .hit-stars { display: block; }
+.hit-stars .hs {
+  position: absolute; left: -9px; top: -9px; width: 18px; height: 18px;
+  background: var(--yellow); border: 3px solid var(--ink);
+  transform: rotate(45deg);
+  animation: hitStar .8s ease-out both;
+}
+.hit-stars .hs:nth-child(2) { animation-delay: .1s; background: var(--cream); }
+.hit-stars .hs:nth-child(3) { animation-delay: .2s; background: var(--coral); }
+
+/* dizzy eyes on hit: X pupils via crossed bars */
+.actor.hit .pupil { opacity: 0; }
+
+/* JOY variant: the slap was delightful — happy hop, hearts, no dizzy stars */
+.actor.hit.joy .char { animation: joyHop .65s ease-out both; }
+.actor.hit.joy .pupil { opacity: 1; }
+.actor.hit.joy .hit-stars { display: none; }
+@keyframes joyHop {
+  0% { transform: translateY(0) rotate(0); }
+  20% { transform: translateY(-44px) rotate(-9deg); }
+  40% { transform: translateY(0) rotate(0); }
+  58% { transform: translateY(-26px) rotate(9deg); }
+  74% { transform: translateY(0) rotate(0); }
+  88% { transform: translateY(-10px) rotate(-4deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+/* taunt (player whiffed on this character): wobble + tongue */
+.actor.taunt .char { animation: tauntWobble .5s ease-in-out 2; transform-origin: bottom center; }
+.tongue {
+  position: absolute; width: 18px; height: 26px;
+  border-radius: 0 0 12px 12px;
+  background: var(--coral); border: 4px solid var(--ink); border-top: none;
+  display: none; z-index: 26;
+}
+.actor.taunt .tongue, .actor.expired .tongue { display: block; }
+
+/* exiting after a hit: scamper (fast lean) */
+.actor.exiting .char { animation: bob .35s ease-in-out infinite; }
+.actor.exiting .leg-l { animation: walkLeg .25s ease-in-out infinite; transform-origin: top center; }
+.actor.exiting .leg-r { animation: walkLegR .25s ease-in-out infinite; transform-origin: top center; }
